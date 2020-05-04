@@ -16,7 +16,7 @@ class FacebookTest extends TestCase
         $this->facebook = new Facebook([
             'app_id' => '123456789',
             'app_secret' => 'abcdefgh123456789',
-            'redirect_uri' => 'https://yourdomain.com'
+            'redirect_uri' => 'https://yourdomain.com',
         ]);
 
         $this->accessToken = 'your-page-access-token';
@@ -102,7 +102,8 @@ class FacebookTest extends TestCase
         $this->assertJson($this->facebook->get('/me')->toJson());
     }
 
-    private function expectExceptionReuse() {
+    private function expectExceptionReuse()
+    {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Invalid access token');
         $this->expectExceptionCode(400);
