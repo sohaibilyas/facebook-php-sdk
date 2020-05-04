@@ -10,11 +10,11 @@ class Facebook
 {
     const BASE_URL = 'https://graph.facebook.com';
 
-    private $config = null;
-    private $accessToken = null;
-    private $client = null;
-    private $state = null;
-    private $response = null;
+    private $config;
+    private $accessToken;
+    private $client;
+    private $state;
+    private $response;
     private $graphVersion = 'v6.0';
 
     public function __construct(array $config = null)
@@ -61,7 +61,7 @@ class Facebook
 
     public function loggedIn()
     {
-        if (isset($this->accessToken) && $this->accessToken != '') {
+        if (! empty($this->accessToken)) {
             return true;
         }
 
@@ -70,11 +70,7 @@ class Facebook
                 throw new Exception('state token did not match');
             }
             
-            try {
-                $this->accessToken = json_decode($this->client->get('/oauth/access_token?client_id=' . $this->config['app_id'] . '&client_secret=' . $this->config['app_secret'] . '&redirect_uri=' . $this->config['redirect_uri'] . '&code=' . $_GET['code'])->getBody())->access_token;
-            } catch (ClientException $e) {
-                echo $e->getMessage();
-            }
+            $this->accessToken = json_decode($this->client->get('/oauth/access_token?client_id=' . $this->config['app_id'] . '&client_secret=' . $this->config['app_secret'] . '&redirect_uri=' . $this->config['redirect_uri'] . '&code=' . $_GET['code'])->getBody())->access_token;
 
             return true;
         }
@@ -84,10 +80,6 @@ class Facebook
 
     public function getLoginUrl(array $permissions = ['default'])
     {
-        if (count($permissions) <= 0) {
-            throw new Exception('did not select any permissions');
-        }
-
         $permissions = implode(',', $permissions);
         $this->state = bin2hex(random_bytes(20));
         $_SESSION['state'] = $this->state;
