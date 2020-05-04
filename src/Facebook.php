@@ -68,8 +68,8 @@ class Facebook
             if ($_SESSION['state'] != $_GET['state']) {
                 throw new Exception('state token did not match');
             }
-            
-            $this->accessToken = json_decode($this->client->get('/oauth/access_token?client_id=' . $this->config['app_id'] . '&client_secret=' . $this->config['app_secret'] . '&redirect_uri=' . $this->config['redirect_uri'] . '&code=' . $_GET['code'])->getBody())->access_token;
+
+            $this->accessToken = json_decode($this->client->get('/oauth/access_token?client_id='.$this->config['app_id'].'&client_secret='.$this->config['app_secret'].'&redirect_uri='.$this->config['redirect_uri'].'&code='.$_GET['code'])->getBody())->access_token;
 
             return true;
         }
