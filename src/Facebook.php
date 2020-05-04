@@ -19,20 +19,19 @@ class Facebook
 
     public function __construct(array $config = null)
     {
-
-        if (!$config) {
+        if (! $config) {
             throw new Exception('config array not provided to contructer');
         }
 
-        if (!isset($config['app_id']) || $config['app_id'] == '') {
+        if (! isset($config['app_id']) || $config['app_id'] == '') {
             throw new Exception('app_id not set in config array');
         }
 
-        if (!isset($config['app_secret']) || $config['app_secret'] == '') {
+        if (! isset($config['app_secret']) || $config['app_secret'] == '') {
             throw new Exception('app_secret not set in config array');
         }
 
-        if (!isset($config['redirect_uri']) || $config['redirect_uri'] == '') {
+        if (! isset($config['redirect_uri']) || $config['redirect_uri'] == '') {
             throw new Exception('redirect_uri not set in config array');
         }
 
@@ -41,7 +40,7 @@ class Facebook
         }
 
         $this->config = $config;
-        $this->client = new Client(['base_uri' => self::BASE_URL . '/' . $this->graphVersion]);
+        $this->client = new Client(['base_uri' => self::BASE_URL.'/'.$this->graphVersion]);
     }
 
     public function getConfig()
@@ -83,12 +82,13 @@ class Facebook
         $permissions = implode(',', $permissions);
         $this->state = bin2hex(random_bytes(20));
         $_SESSION['state'] = $this->state;
-        return 'https://www.facebook.com/' . $this->graphVersion . '/dialog/oauth?client_id=' . $this->config['app_id'] . '&redirect_uri=' . $this->config['redirect_uri'] . '&scope=' . $permissions . '&state=' . $this->state;
+
+        return 'https://www.facebook.com/'.$this->graphVersion.'/dialog/oauth?client_id='.$this->config['app_id'].'&redirect_uri='.$this->config['redirect_uri'].'&scope='.$permissions.'&state='.$this->state;
     }
 
     public function post(string $path, array $params, string $accessToken = null)
     {
-        $path = $path[0] == '/' ? $path : '/' . $path;
+        $path = $path[0] == '/' ? $path : '/'.$path;
 
         $this->accessToken = $accessToken ? $accessToken : $this->accessToken;
 
@@ -98,9 +98,10 @@ class Facebook
         }
 
         try {
-            $this->response = $this->client->post($path . $separator . 'access_token=' . $this->accessToken, [
-                'json' => $params
+            $this->response = $this->client->post($path.$separator.'access_token='.$this->accessToken, [
+                'json' => $params,
             ]);
+
             return $this;
         } catch (ClientException $e) {
             throw new Exception('Invalid access token', 400);
@@ -109,7 +110,7 @@ class Facebook
 
     public function get(string $path, string $accessToken = null)
     {
-        $path = $path[0] == '/' ? $path : '/' . $path;
+        $path = $path[0] == '/' ? $path : '/'.$path;
 
         $this->accessToken = $accessToken ? $accessToken : $this->accessToken;
 
@@ -119,7 +120,8 @@ class Facebook
         }
 
         try {
-            $this->response = $this->client->get($path . $separator . 'access_token=' . $this->accessToken);
+            $this->response = $this->client->get($path.$separator.'access_token='.$this->accessToken);
+
             return $this;
         } catch (ClientException $e) {
             throw new Exception('Invalid access token', 400);
