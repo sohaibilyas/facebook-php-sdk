@@ -2,7 +2,6 @@
 
 namespace SohaibIlyas\FacebookPhpSdk\Tests;
 
-use Exception;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use SohaibIlyas\FacebookPhpSdk\Facebook;
