@@ -3,6 +3,7 @@
 namespace SohaibIlyas\FacebookPhpSdk\Tests;
 
 use Exception;
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use SohaibIlyas\FacebookPhpSdk\Facebook;
 
@@ -65,7 +66,7 @@ class FacebookTest extends TestCase
     /** @test */
     public function it_throws_an_exception_using_invalid_access_token_on_get_request()
     {
-        $this->expectExceptionReuse();
+        $this->expectException(ClientException::class);
         $this->facebook->setAccessToken($this->accessToken);
         $this->facebook->get('/me')->getStatusCode();
     }
@@ -73,7 +74,7 @@ class FacebookTest extends TestCase
     /** @test */
     public function it_throws_an_exception_using_invalid_access_token_on_post_request()
     {
-        $this->expectExceptionReuse();
+        $this->expectException(ClientException::class);
         $this->facebook->setAccessToken($this->accessToken);
         $this->facebook->post('/me/feed', ['message' => uniqid()])->getStatusCode();
     }
@@ -81,7 +82,7 @@ class FacebookTest extends TestCase
     /** @test */
     public function it_throws_an_exception_using_invalid_access_token_on_returning_response_object()
     {
-        $this->expectExceptionReuse();
+        $this->expectException(ClientException::class);
         $this->facebook->setAccessToken($this->accessToken);
         $this->assertIsObject($this->facebook->get('/me')->toObject());
     }
@@ -89,7 +90,7 @@ class FacebookTest extends TestCase
     /** @test */
     public function it_throws_an_exception_using_invalid_access_token_on_returning_response_array()
     {
-        $this->expectExceptionReuse();
+        $this->expectException(ClientException::class);
         $this->facebook->setAccessToken($this->accessToken);
         $this->assertIsArray($this->facebook->get('/me')->toArray());
     }
@@ -97,16 +98,9 @@ class FacebookTest extends TestCase
     /** @test */
     public function it_throws_an_exception_using_invalid_access_token_on_returning_response_json()
     {
-        $this->expectExceptionReuse();
+        $this->expectException(ClientException::class);
         $this->facebook->setAccessToken($this->accessToken);
         $this->assertJson($this->facebook->get('/me')->toJson());
-    }
-
-    private function expectExceptionReuse()
-    {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('Invalid access token');
-        $this->expectExceptionCode(400);
     }
 
     protected function tearDown(): void
