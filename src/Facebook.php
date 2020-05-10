@@ -76,7 +76,7 @@ class Facebook
         return false;
     }
 
-    public function getLoginUrl(array $permissions = ['default'])
+    public function getLoginUrl(array $permissions = [])
     {
         $permissions = implode(',', $permissions);
         $this->state = bin2hex(random_bytes(20));
