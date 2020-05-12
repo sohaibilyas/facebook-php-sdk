@@ -4,6 +4,7 @@ namespace SohaibIlyas\FacebookPhpSdk;
 
 use Exception;
 use GuzzleHttp\Client;
+use stdClass;
 
 class Facebook
 {
@@ -124,7 +125,7 @@ class Facebook
         return $this->response->getStatusCode();
     }
 
-    public function toObject()
+    public function toObject(): stdClass
     {
         return json_decode($this->response->getBody()->getContents());
     }
