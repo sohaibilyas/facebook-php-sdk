@@ -18,9 +18,9 @@ if ($facebook->loggedIn() || isset($_SESSION['access_token'])) {
 
     $_SESSION['access_token'] = $facebook->getAccessToken();
 
-    $response = $facebook->get('/me/likes')->toArray();
+    $response = $facebook->get('/me?fields=birthday,gender,name,email')->toArray();
 
     print_r($response);
 } else {
-    echo "<a href='".$facebook->getLoginUrl(['email', 'user_likes'])."'>Login with Facebook</a>";
+    echo "<a href='" . $facebook->getLoginUrl(['email', 'user_birthday', 'user_gender']) . "'>Login with Facebook</a>";
 }
