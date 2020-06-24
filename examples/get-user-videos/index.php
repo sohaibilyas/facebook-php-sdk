@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 require './vendor/autoload.php';
@@ -22,5 +23,5 @@ if ($facebook->loggedIn() || isset($_SESSION['access_token'])) {
 
     print_r($response);
 } else {
-    echo "<a href='" . $facebook->getLoginUrl(['email', 'user_videos']) . "'>Login with Facebook</a>";
+    echo "<a href='".$facebook->getLoginUrl(['email', 'user_videos'])."'>Login with Facebook</a>";
 }
