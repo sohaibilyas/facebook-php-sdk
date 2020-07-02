@@ -19,7 +19,7 @@ if ($facebook->loggedIn() || isset($_SESSION['access_token'])) {
 
     $_SESSION['access_token'] = $facebook->getAccessToken();
 
-    $response = $facebook->get('/debug_token?input_token=' . $_SESSION['access_token'])->toArray();
+    $response = $facebook->get('/debug_token?input_token='.$_SESSION['access_token'])->toArray();
 
     if ($response['data']['is_valid']) {
         echo 'logged in';
@@ -27,5 +27,5 @@ if ($facebook->loggedIn() || isset($_SESSION['access_token'])) {
         echo 'logged out';
     }
 } else {
-    echo "<a href='" . $facebook->getLoginUrl(['email']) . "'>Login with Facebook</a>";
+    echo "<a href='".$facebook->getLoginUrl(['email'])."'>Login with Facebook</a>";
 }
