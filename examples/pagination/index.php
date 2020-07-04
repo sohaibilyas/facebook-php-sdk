@@ -27,5 +27,5 @@ if ($facebook->loggedIn() || isset($_SESSION['access_token'])) {
     // print_r($firstPage);
     print_r($secondPage);
 } else {
-    echo "<a href='" . $facebook->getLoginUrl(['user_posts']) . "'>Login with Facebook</a>";
+    echo "<a href='".$facebook->getLoginUrl(['user_posts'])."'>Login with Facebook</a>";
 }
