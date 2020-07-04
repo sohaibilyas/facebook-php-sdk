@@ -19,13 +19,9 @@ if ($facebook->loggedIn() || isset($_SESSION['access_token'])) {
 
     $_SESSION['access_token'] = $facebook->getAccessToken();
 
-    $response = $facebook->get('/me/feed?limit=5');
+    $response = $facebook->get('/me/permissions')->toArray();
 
-    $firstPage = $response->toArray();
-    $secondPage = $response->nextPage()->toArray();
-
-    // print_r($firstPage);
-    print_r($secondPage);
+    print_r($response);
 } else {
-    echo "<a href='" . $facebook->getLoginUrl(['user_posts']) . "'>Login with Facebook</a>";
+    echo "<a href='" . $facebook->getLoginUrl(['user_posts', 'user_photos']) . "'>Login with Facebook</a>";
 }
