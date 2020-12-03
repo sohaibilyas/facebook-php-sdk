@@ -15,7 +15,7 @@ class Facebook
     private $client;
     private $state;
     private $response;
-    private $graphVersion = 'v7.0';
+    private $graphVersion = 'v8.0';
 
     public function __construct(array $config = null)
     {
