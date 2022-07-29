@@ -20,15 +20,15 @@ class Facebook
 
     public function __construct(array $config)
     {
-        if (!isset($config['app_id']) || $config['app_id'] == '') {
+        if (! isset($config['app_id']) || $config['app_id'] == '') {
             throw new Exception('app_id not set in config array');
         }
 
-        if (!isset($config['app_secret']) || $config['app_secret'] == '') {
+        if (! isset($config['app_secret']) || $config['app_secret'] == '') {
             throw new Exception('app_secret not set in config array');
         }
 
-        if (!isset($config['redirect_url']) || $config['redirect_url'] == '') {
+        if (! isset($config['redirect_url']) || $config['redirect_url'] == '') {
             throw new Exception('redirect_url not set in config array');
         }
 
@@ -63,9 +63,9 @@ class Facebook
     public function handleRedirect(callable $callable)
     {
         if (isset($_GET['code'], $_GET['state'])) {
-            $this->accessToken = json_decode($this->client->get($this->apiVersion . '/oauth/access_token?client_id=' . $this->config['app_id'] . '&client_secret=' . $this->config['app_secret'] . '&redirect_uri=' . $this->config['redirect_url'] . '&code=' . $_GET['code'])->getBody()->getContents())->access_token;
+            $this->accessToken = json_decode($this->client->get($this->apiVersion.'/oauth/access_token?client_id='.$this->config['app_id'].'&client_secret='.$this->config['app_secret'].'&redirect_uri='.$this->config['redirect_url'].'&code='.$_GET['code'])->getBody()->getContents())->access_token;
 
-            $user = json_decode($this->client->get($this->apiVersion . '/me?fields=id,first_name,last_name,name,picture.height(150).width(150)&access_token=' . $this->accessToken)->getBody()->getContents());
+            $user = json_decode($this->client->get($this->apiVersion.'/me?fields=id,first_name,last_name,name,picture.height(150).width(150)&access_token='.$this->accessToken)->getBody()->getContents());
 
             $response = [
                 'id' => $user->id,
@@ -73,11 +73,15 @@ class Facebook
                 'last_name' => $user->last_name,
                 'full_name' => $user->name,
                 'profile_picture_url' => $user->picture->data->url,
-                'access_token' => $this->accessToken
+                'access_token' => $this->accessToken,
             ];
 
-            if ($this->responseType == 'json') $response = json_encode($response);
-            if ($this->responseType == 'object') $response = json_decode(json_encode($response));
+            if ($this->responseType == 'json') {
+                $response = json_encode($response);
+            }
+            if ($this->responseType == 'object') {
+                $response = json_decode(json_encode($response));
+            }
 
             $callable($response);
             exit;
@@ -89,12 +93,12 @@ class Facebook
         $permissions = implode(',', $permissions);
         $this->state = bin2hex(random_bytes(20));
 
-        return 'https://www.facebook.com/' . $this->apiVersion . '/dialog/oauth?client_id=' . $this->config['app_id'] . '&redirect_uri=' . $this->config['redirect_url'] . '&scope=' . $permissions . '&state=' . $this->state;
+        return 'https://www.facebook.com/'.$this->apiVersion.'/dialog/oauth?client_id='.$this->config['app_id'].'&redirect_uri='.$this->config['redirect_url'].'&scope='.$permissions.'&state='.$this->state;
     }
 
     public function post(string $path, array $params, string $accessToken = null)
     {
-        $path = $path[0] == '/' ? $path : '/' . $path;
+        $path = $path[0] == '/' ? $path : '/'.$path;
 
         $this->accessToken = $accessToken ? $accessToken : $this->accessToken;
 
@@ -104,7 +108,7 @@ class Facebook
         }
 
         try {
-            $this->response = $this->client->post($this->apiVersion . $path . $separator . 'access_token=' . $this->accessToken, [
+            $this->response = $this->client->post($this->apiVersion.$path.$separator.'access_token='.$this->accessToken, [
                 'json' => $params,
             ]);
 
@@ -116,7 +120,7 @@ class Facebook
 
     public function get(string $path, string $accessToken = null)
     {
-        $path = $path[0] == '/' ? $path : '/' . $path;
+        $path = $path[0] == '/' ? $path : '/'.$path;
 
         $this->accessToken = $accessToken ? $accessToken : $this->accessToken;
 
@@ -126,7 +130,8 @@ class Facebook
         }
 
         try {
-            $this->response = $this->client->get($this->apiVersion . $path . $separator . 'access_token=' . $this->accessToken);
+            $this->response = $this->client->get($this->apiVersion.$path.$separator.'access_token='.$this->accessToken);
+
             return $this->getResponse();
         } catch (\Exception $e) {
             return $e->getResponse()->getBody()->getContents();
@@ -135,7 +140,7 @@ class Facebook
 
     public function delete(string $path, string $accessToken = null)
     {
-        $path = $path[0] == '/' ? $path : '/' . $path;
+        $path = $path[0] == '/' ? $path : '/'.$path;
 
         $this->accessToken = $accessToken ? $accessToken : $this->accessToken;
 
@@ -145,7 +150,8 @@ class Facebook
         }
 
         try {
-            $this->response = $this->client->delete($this->apiVersion . $path . $separator . 'access_token=' . $this->accessToken);
+            $this->response = $this->client->delete($this->apiVersion.$path.$separator.'access_token='.$this->accessToken);
+
             return $this->getResponse();
         } catch (\Exception $e) {
             return $e->getResponse()->getBody()->getContents();
@@ -154,24 +160,30 @@ class Facebook
 
     public function getBusinesses(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
     {
-        return $this->get($userId . '/businesses?fields=' . implode(',', $fields) . '&limit=' . $limit, $accessToken);
+        return $this->get($userId.'/businesses?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
     public function getPages(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
     {
-        return $this->get($userId . '/accounts?fields=' . implode(',', $fields) . '&limit=' . $limit, $accessToken);
+        return $this->get($userId.'/accounts?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
     public function getAdAccounts(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
     {
-        return $this->get($userId . '/adaccounts?fields=' . implode(',', $fields) . '&limit=' . $limit, $accessToken);
+        return $this->get($userId.'/adaccounts?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
     private function getResponse()
     {
-        if ($this->responseType == 'json') return $this->toJson();
-        if ($this->responseType == 'object') return $this->toObject();
-        if ($this->responseType == 'array') return $this->toArray();
+        if ($this->responseType == 'json') {
+            return $this->toJson();
+        }
+        if ($this->responseType == 'object') {
+            return $this->toObject();
+        }
+        if ($this->responseType == 'array') {
+            return $this->toArray();
+        }
     }
 
     public function toObject(): stdClass
