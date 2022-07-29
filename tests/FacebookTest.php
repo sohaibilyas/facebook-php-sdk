@@ -16,17 +16,10 @@ class FacebookTest extends TestCase
         $this->facebook = new Facebook([
             'app_id' => '123456789',
             'app_secret' => 'abcdefgh123456789',
-            'redirect_uri' => 'https://yourdomain.com',
+            'redirect_url' => 'https://yourdomain.com',
         ]);
 
         $this->accessToken = 'your-page-access-token';
-    }
-
-    /** @test */
-    public function it_throws_exception_if_config_array_not_provided()
-    {
-        $this->expectExceptionMessage('config array not provided to contructer');
-        $facebook = new Facebook();
     }
 
     /** @test */
@@ -50,56 +43,31 @@ class FacebookTest extends TestCase
     }
 
     /** @test */
-    public function it_checks_if_logged_in()
-    {
-        $this->facebook->setAccessToken($this->accessToken);
-        $this->assertTrue($this->facebook->loggedIn());
-    }
-
-    /** @test */
     public function it_gets_login_url()
     {
         $this->assertStringContainsString('/dialog/oauth?client_id=', $this->facebook->getLoginUrl());
     }
 
     /** @test */
-    public function it_throws_an_exception_using_invalid_access_token_on_get_request()
+    public function it_throws_an_error_using_invalid_access_token_on_get_request()
     {
-        $this->expectException(ClientException::class);
         $this->facebook->setAccessToken($this->accessToken);
-        $this->facebook->get('/me')->getStatusCode();
+        $this->assertStringContainsString('Invalid OAuth access token', $this->facebook->get('/me'));
     }
 
     /** @test */
-    public function it_throws_an_exception_using_invalid_access_token_on_post_request()
+    public function it_throws_an_error_using_invalid_access_token_on_post_request()
     {
-        $this->expectException(ClientException::class);
         $this->facebook->setAccessToken($this->accessToken);
-        $this->facebook->post('/me/feed', ['message' => uniqid()])->getStatusCode();
+        $this->assertStringContainsString('Invalid OAuth access token', $this->facebook->post('/me/feed', ['message' => uniqid()]));
     }
 
     /** @test */
-    public function it_throws_an_exception_using_invalid_access_token_on_returning_response_object()
+    public function it_return_response_as_json()
     {
-        $this->expectException(ClientException::class);
+        $this->facebook->setResponseType('json');
         $this->facebook->setAccessToken($this->accessToken);
-        $this->assertIsObject($this->facebook->get('/me')->toObject());
-    }
-
-    /** @test */
-    public function it_throws_an_exception_using_invalid_access_token_on_returning_response_array()
-    {
-        $this->expectException(ClientException::class);
-        $this->facebook->setAccessToken($this->accessToken);
-        $this->assertIsArray($this->facebook->get('/me')->toArray());
-    }
-
-    /** @test */
-    public function it_throws_an_exception_using_invalid_access_token_on_returning_response_json()
-    {
-        $this->expectException(ClientException::class);
-        $this->facebook->setAccessToken($this->accessToken);
-        $this->assertJson($this->facebook->get('/me')->toJson());
+        $this->assertJson($this->facebook->get('/me'));
     }
 
     protected function tearDown(): void

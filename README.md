@@ -10,11 +10,10 @@ Use the composer to install.
 composer require sohaibilyas/facebook-php-sdk
 ```
 
-## Usage
+## Login with Facebook
 
 ```php
 <?php
-session_start();
 
 require './vendor/autoload.php';
 
@@ -23,22 +22,41 @@ use SohaibIlyas\FacebookPhpSdk\Facebook;
 $facebook = new Facebook([
     'app_id' => 'app-id-here',
     'app_secret' => 'app-secret-here',
-    'redirect_uri' => 'https://sohaibilyas.com'
+    'redirect_url' => 'https://sohaibilyas.com'
 ]);
 
-if ($facebook->loggedIn() || isset($_SESSION['access_token'])) {
-    if (isset($_SESSION['access_token'])) {
-        $facebook->setAccessToken($_SESSION['access_token']);
-    }
-    
-    $_SESSION['access_token'] = $facebook->getAccessToken();
+$facebook->setResponseType('object');
 
-    $response = $facebook->get('/me?fields=id,name,email')->toJson();
+$facebook->handleRedirect(function($facebookUser) {
+    // save access token in database for later use
+    echo $facebookUser->access_token;
+});
 
-    echo $response;
-} else {
-    echo $facebook->getLoginUrl(['email']);
-}
+// get login with facebook url
+echo $facebook->getLoginUrl(['email']);
+```
+
+## Using saved access token
+
+```php
+<?php
+
+require './vendor/autoload.php';
+
+use SohaibIlyas\FacebookPhpSdk\Facebook;
+
+$facebook = new Facebook([
+    'app_id' => 'app-id-here',
+    'app_secret' => 'app-secret-here',
+    'redirect_url' => 'https://sohaibilyas.com'
+]);
+
+$facebook->setResponseType('json');
+
+// set facebook access token
+$facebook->setAccessToken('facebook-user-access-token');
+
+echo $facebook->get('/me?fields=id,first_name,last_name,name');
 ```
 
 ## License
