@@ -14,7 +14,7 @@ class Facebook
     private $accessToken;
     private $client;
     private $state;
-    private $responseType = 'json';
+    private $responseType = 'object';
     private $response;
     private $apiVersion = 'v14.0';
 
@@ -60,6 +60,26 @@ class Facebook
         $this->responseType = $type;
     }
 
+    public function getUser(string $userId = 'me', array $fields = ['id', 'name'], string $accessToken = null)
+    {
+        return $this->get($userId . '?fields=' . implode(',', $fields), $accessToken);
+    }
+
+    public function getBusinesses(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
+    {
+        return $this->get($userId . '/businesses?fields=' . implode(',', $fields) . '&limit=' . $limit, $accessToken);
+    }
+
+    public function getPages(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
+    {
+        return $this->get($userId . '/accounts?fields=' . implode(',', $fields) . '&limit=' . $limit, $accessToken);
+    }
+
+    public function getAdAccounts(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
+    {
+        return $this->get($userId . '/adaccounts?fields=' . implode(',', $fields) . '&limit=' . $limit, $accessToken);
+    }
+
     public function handleRedirect(callable $callable)
     {
         if (isset($_GET['code'], $_GET['state'])) {
@@ -84,7 +104,6 @@ class Facebook
             }
 
             $callable($response);
-            exit;
         }
     }
 
@@ -94,6 +113,26 @@ class Facebook
         $this->state = bin2hex(random_bytes(20));
 
         return 'https://www.facebook.com/'.$this->apiVersion.'/dialog/oauth?client_id='.$this->config['app_id'].'&redirect_uri='.$this->config['redirect_url'].'&scope='.$permissions.'&state='.$this->state;
+    }
+
+    public function get(string $path, string $accessToken = null)
+    {
+        $path = $path[0] == '/' ? $path : '/' . $path;
+
+        $this->accessToken = $accessToken ? $accessToken : $this->accessToken;
+
+        $separator = '?';
+        if (strpos($path, '?') != false) {
+            $separator = '&';
+        }
+
+        try {
+            $this->response = $this->client->get($this->apiVersion . $path . $separator . 'access_token=' . $this->accessToken);
+            return $this->getResponse();
+        } catch (\Exception $e) {
+            $this->response = $e->getResponse();
+            return $this->getResponse();
+        }
     }
 
     public function post(string $path, array $params, string $accessToken = null)
@@ -114,27 +153,8 @@ class Facebook
 
             return $this->getResponse();
         } catch (\Exception $e) {
-            return $e->getResponse()->getBody()->getContents();
-        }
-    }
-
-    public function get(string $path, string $accessToken = null)
-    {
-        $path = $path[0] == '/' ? $path : '/'.$path;
-
-        $this->accessToken = $accessToken ? $accessToken : $this->accessToken;
-
-        $separator = '?';
-        if (strpos($path, '?') != false) {
-            $separator = '&';
-        }
-
-        try {
-            $this->response = $this->client->get($this->apiVersion.$path.$separator.'access_token='.$this->accessToken);
-
+            $this->response = $e->getResponse();
             return $this->getResponse();
-        } catch (\Exception $e) {
-            return $e->getResponse()->getBody()->getContents();
         }
     }
 
@@ -154,23 +174,9 @@ class Facebook
 
             return $this->getResponse();
         } catch (\Exception $e) {
-            return $e->getResponse()->getBody()->getContents();
+            $this->response = $e->getResponse();
+            return $this->getResponse();
         }
-    }
-
-    public function getBusinesses(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
-    {
-        return $this->get($userId.'/businesses?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
-    }
-
-    public function getPages(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
-    {
-        return $this->get($userId.'/accounts?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
-    }
-
-    public function getAdAccounts(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
-    {
-        return $this->get($userId.'/adaccounts?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
     private function getResponse()

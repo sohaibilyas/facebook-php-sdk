@@ -10,7 +10,7 @@ Use the composer to install.
 composer require sohaibilyas/facebook-php-sdk
 ```
 
-## Login with Facebook
+## Usage
 
 ```php
 <?php
@@ -25,38 +25,24 @@ $facebook = new Facebook([
     'redirect_url' => 'https://sohaibilyas.com'
 ]);
 
-$facebook->setResponseType('object');
-
-$facebook->handleRedirect(function($facebookUser) {
-    // save access token in database for later use
-    echo $facebookUser->access_token;
+$facebook->handleRedirect(function($user) {
+    // save access token in database
+    setcookie('access_token', $user->access_token);
 });
 
-// get login with facebook url
-echo $facebook->getLoginUrl(['email']);
-```
+// checking if access token is saved otherwise show login with facebook url
+if (isset($_COOKIE['access_token'])) {
+    // setting default access token for all requests
+    $facebook->setAccessToken($_COOKIE['access_token']);
 
-## Using saved access token
+    // default response type e.g. object, json, array
+    $facebook->setResponseType('json');
 
-```php
-<?php
-
-require './vendor/autoload.php';
-
-use SohaibIlyas\FacebookPhpSdk\Facebook;
-
-$facebook = new Facebook([
-    'app_id' => 'app-id-here',
-    'app_secret' => 'app-secret-here',
-    'redirect_url' => 'https://sohaibilyas.com'
-]);
-
-$facebook->setResponseType('json');
-
-// set facebook access token
-$facebook->setAccessToken('facebook-user-access-token');
-
-echo $facebook->get('/me?fields=id,first_name,last_name,name');
+    // getting facebook user information
+    print_r($facebook->getUser());
+} else {
+    echo $facebook->getLoginUrl(['email', 'ads_management', 'business_management', 'ads_read']);exit;
+}
 ```
 
 ## License
