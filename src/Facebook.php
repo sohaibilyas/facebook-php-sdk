@@ -62,22 +62,22 @@ class Facebook
 
     public function getUser(string $userId = 'me', array $fields = ['id', 'name'], string $accessToken = null)
     {
-        return $this->get($userId . '?fields=' . implode(',', $fields), $accessToken);
+        return $this->get($userId.'?fields='.implode(',', $fields), $accessToken);
     }
 
     public function getBusinesses(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
     {
-        return $this->get($userId . '/businesses?fields=' . implode(',', $fields) . '&limit=' . $limit, $accessToken);
+        return $this->get($userId.'/businesses?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
     public function getPages(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
     {
-        return $this->get($userId . '/accounts?fields=' . implode(',', $fields) . '&limit=' . $limit, $accessToken);
+        return $this->get($userId.'/accounts?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
     public function getAdAccounts(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
     {
-        return $this->get($userId . '/adaccounts?fields=' . implode(',', $fields) . '&limit=' . $limit, $accessToken);
+        return $this->get($userId.'/adaccounts?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
     public function handleRedirect(callable $callable)
@@ -117,7 +117,7 @@ class Facebook
 
     public function get(string $path, string $accessToken = null)
     {
-        $path = $path[0] == '/' ? $path : '/' . $path;
+        $path = $path[0] == '/' ? $path : '/'.$path;
 
         $this->accessToken = $accessToken ? $accessToken : $this->accessToken;
 
@@ -127,10 +127,12 @@ class Facebook
         }
 
         try {
-            $this->response = $this->client->get($this->apiVersion . $path . $separator . 'access_token=' . $this->accessToken);
+            $this->response = $this->client->get($this->apiVersion.$path.$separator.'access_token='.$this->accessToken);
+
             return $this->getResponse();
         } catch (\Exception $e) {
             $this->response = $e->getResponse();
+
             return $this->getResponse();
         }
     }
@@ -154,6 +156,7 @@ class Facebook
             return $this->getResponse();
         } catch (\Exception $e) {
             $this->response = $e->getResponse();
+
             return $this->getResponse();
         }
     }
@@ -175,6 +178,7 @@ class Facebook
             return $this->getResponse();
         } catch (\Exception $e) {
             $this->response = $e->getResponse();
+
             return $this->getResponse();
         }
     }
