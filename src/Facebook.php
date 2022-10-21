@@ -65,19 +65,39 @@ class Facebook
         return $this->get($userId.'?fields='.implode(',', $fields), $accessToken);
     }
 
+    // businesses
     public function getBusinesses(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
     {
         return $this->get($userId.'/businesses?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
+    // pages
     public function getPages(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
     {
         return $this->get($userId.'/accounts?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
+    // adaccounts
     public function getAdAccounts(string $userId = 'me', array $fields = ['id', 'name'], int $limit = 100, string $accessToken = null)
     {
         return $this->get($userId.'/adaccounts?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
+    }
+
+    // campaigns
+    public function getCampaigns(string $adAccountId, array $fields = ['id', 'name', 'status', 'objective'], int $limit = 100, string $accessToken = null)
+    {
+        return $this->get($adAccountId.'/campaigns?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
+    }
+
+    public function createCampaign(string $adAccountId, array $campaignData = ['status' => 'PAUSED'], string $accessToken = null)
+    {
+        return $this->post($adAccountId.'/campaigns', $campaignData, $accessToken);
+    }
+
+    // adsets
+    public function getAdsets(string $campaignId, array $fields = ['id', 'name', 'status', 'objective'], int $limit = 100, string $accessToken = null)
+    {
+        return $this->get($campaignId.'/adsets?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
     public function handleRedirect(callable $callable)
