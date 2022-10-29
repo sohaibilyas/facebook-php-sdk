@@ -20,7 +20,7 @@ class Facebook
 
     public function __construct(array $config)
     {
-        if (!isset($config['access_token'])) {
+        if (! isset($config['access_token'])) {
             if (! isset($config['app_id']) || $config['app_id'] == '') {
                 throw new Exception('app_id not set in config array');
             }
@@ -33,11 +33,11 @@ class Facebook
                 throw new Exception('redirect_url not set in config array');
             }
         }
-        
+
         if (isset($config['api_version']) && $config['api_version'] != '') {
             $this->apiVersion = $config['api_version'];
         }
-        
+
         if (isset($config['response_type']) && $config['response_type'] != '') {
             $this->responseType = $config['response_type'];
         }
