@@ -14,26 +14,36 @@ class Facebook
     private $accessToken;
     private $client;
     private $state;
-    private $responseType = 'object';
+    private $responseType = 'json';
     private $response;
-    private $apiVersion = 'v14.0';
+    private $apiVersion = 'v15.0';
 
     public function __construct(array $config)
     {
-        if (! isset($config['app_id']) || $config['app_id'] == '') {
-            throw new Exception('app_id not set in config array');
-        }
+        if (!isset($config['access_token'])) {
+            if (! isset($config['app_id']) || $config['app_id'] == '') {
+                throw new Exception('app_id not set in config array');
+            }
 
-        if (! isset($config['app_secret']) || $config['app_secret'] == '') {
-            throw new Exception('app_secret not set in config array');
-        }
+            if (! isset($config['app_secret']) || $config['app_secret'] == '') {
+                throw new Exception('app_secret not set in config array');
+            }
 
-        if (! isset($config['redirect_url']) || $config['redirect_url'] == '') {
-            throw new Exception('redirect_url not set in config array');
+            if (! isset($config['redirect_url']) || $config['redirect_url'] == '') {
+                throw new Exception('redirect_url not set in config array');
+            }
         }
-
+        
         if (isset($config['api_version']) && $config['api_version'] != '') {
             $this->apiVersion = $config['api_version'];
+        }
+        
+        if (isset($config['response_type']) && $config['response_type'] != '') {
+            $this->responseType = $config['response_type'];
+        }
+
+        if (isset($config['access_token']) && $config['access_token'] != '') {
+            $this->accessToken = $config['access_token'];
         }
 
         $this->config = $config;
@@ -84,20 +94,25 @@ class Facebook
     }
 
     // campaigns
-    public function getCampaigns(string $adAccountId, array $fields = ['id', 'name', 'status', 'objective'], int $limit = 100, string $accessToken = null)
+    public function getCampaigns(string $id, array $fields = ['id', 'name', 'status'], int $limit = 100, string $accessToken = null)
     {
-        return $this->get($adAccountId.'/campaigns?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
+        return $this->get($id.'/campaigns?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
     }
 
-    public function createCampaign(string $adAccountId, array $campaignData = ['status' => 'PAUSED'], string $accessToken = null)
+    public function createCampaign(string $id, array $campaignData = ['status' => 'PAUSED'], string $accessToken = null)
     {
-        return $this->post($adAccountId.'/campaigns', $campaignData, $accessToken);
+        return $this->post($id.'/campaigns', $campaignData, $accessToken);
     }
 
     // adsets
-    public function getAdsets(string $campaignId, array $fields = ['id', 'name', 'status', 'objective'], int $limit = 100, string $accessToken = null)
+    public function getAdsets(string $id, array $fields = ['id', 'name', 'status'], int $limit = 100, string $accessToken = null)
     {
-        return $this->get($campaignId.'/adsets?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
+        return $this->get($id.'/adsets?fields='.implode(',', $fields).'&limit='.$limit, $accessToken);
+    }
+
+    public function createAdset(string $adAccountId, array $adsetData = ['status' => 'PAUSED'], string $accessToken = null)
+    {
+        return $this->post($adAccountId.'/adsets', $adsetData, $accessToken);
     }
 
     public function handleRedirect(callable $callable)
