@@ -16,7 +16,7 @@ class Facebook
     private $state;
     private $responseType = 'json';
     private $response;
-    private $apiVersion = 'v15.0';
+    private $apiVersion = 'v18.0';
 
     public function __construct(array $config)
     {
